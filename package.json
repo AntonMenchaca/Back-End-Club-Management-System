@@ -1,0 +1,11 @@
+{
+  "name": "club-management-system-back-end",
+  "version": "1.0.0",
+  "description": "Back End API for Club Management Application",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "author": "",
+  "license": "ISC"
+}
