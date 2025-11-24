@@ -41,6 +41,25 @@ class User {
     return rows[0];
   }
 
+  // Get user password hash (for password verification)
+  static async getPasswordHash(id) {
+    const [rows] = await db.query(
+      'SELECT Password FROM USER WHERE Person_ID = ?',
+      [id]
+    );
+    return rows[0]?.Password;
+  }
+
+  // Update password
+  static async updatePassword(id, newPassword) {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await db.query(
+      'UPDATE USER SET Password = ? WHERE Person_ID = ?',
+      [hashedPassword, id]
+    );
+    return true;
+  }
+
   // Create new user (with person record)
   static async create(userData) {
     const connection = await db.getConnection();
