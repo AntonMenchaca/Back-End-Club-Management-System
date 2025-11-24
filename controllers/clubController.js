@@ -78,6 +78,23 @@ const createClub = async (req, res) => {
   }
 };
 
+const getClubByUserId = async (req, res) => {
+  try {
+    const clubs = await Club.getByUserId(req.params.userId);
+    res.status(200).json({
+      status: 'success',
+      results: clubs.length,
+      data: clubs
+    });
+  } catch (error) {
+    console.error('Get clubs by user ID error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: error.message
+    });
+  }
+}
+
 const updateClub = async (req, res) => {
   try {
     const club = await Club.getById(req.params.id);
@@ -242,6 +259,7 @@ const getClubBudget = async (req, res) => {
 
 module.exports = {
   getAllClubs,
+  getClubByUserId,
   getClubById,
   createClub,
   updateClub,

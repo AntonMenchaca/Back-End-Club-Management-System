@@ -9,6 +9,7 @@ router.get('/:id', clubController.getClubById);
 router.get('/:id/members', clubController.getClubMembers);
 router.get('/:id/events', clubController.getClubEvents);
 router.get('/:id/budget', clubController.getClubBudget);
+router.get('/user/:userId', clubController.getClubByUserId);
 
 // Protected routes
 router.post('/', authenticateToken, clubController.createClub);

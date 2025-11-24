@@ -54,6 +54,25 @@ class Club {
     return rows[0];
   }
 
+  // Get clubs by user ID
+  static async getByUserId(userId) {
+    const [rows] = await db.query(`
+      SELECT c.Club_ID, c.Club_Name, c.Description, c.Date_Established, 
+             c.Created_By, c.STATUS,
+             p.First_Name as Creator_First_Name, 
+             p.Last_Name as Creator_Last_Name,
+             COUNT(DISTINCT cm2.Person_ID) as Member_Count
+      FROM CLUB_MEMBERSHIP cm
+      JOIN CLUB c ON cm.Club_ID = c.Club_ID
+      LEFT JOIN PERSON p ON c.Created_By = p.Person_ID
+      LEFT JOIN CLUB_MEMBERSHIP cm2 ON c.Club_ID = cm2.Club_ID AND cm2.Status = 'Active'
+      WHERE cm.Person_ID = ? AND cm.Status = 'Active'
+      GROUP BY c.Club_ID
+      ORDER BY c.Club_ID
+    `, [userId]);
+    return rows;
+  }
+
   // Create club
   static async create(clubData) {
     const [result] = await db.query(
