@@ -5,11 +5,12 @@ const { authenticateToken } = require('../middleware/auth');
 
 // Public routes
 router.get('/', clubController.getAllClubs);
-router.get('/:id', clubController.getClubById);
+router.get('/user/:userId', clubController.getClubByUserId);
+router.get('/:id/budget/summary', clubController.getClubBudgetSummary);
+router.get('/:id/budget', clubController.getClubBudget);
 router.get('/:id/members', clubController.getClubMembers);
 router.get('/:id/events', clubController.getClubEvents);
-router.get('/:id/budget', clubController.getClubBudget);
-router.get('/user/:userId', clubController.getClubByUserId);
+router.get('/:id', clubController.getClubById);
 
 // Protected routes
 router.post('/', authenticateToken, clubController.createClub);

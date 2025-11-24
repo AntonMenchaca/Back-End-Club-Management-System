@@ -257,6 +257,25 @@ const getClubBudget = async (req, res) => {
   }
 };
 
+const getClubBudgetSummary = async (req, res) => {
+  try {
+    const Budget = require('../models/Budget');
+    const budgetSummary = await Budget.getClubBudgetSummary(req.params.id);
+    
+    res.status(200).json({
+      status: 'success',
+      results: budgetSummary.length,
+      data: budgetSummary
+    });
+  } catch (error) {
+    console.error('Get club budget summary error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: error.message
+    });
+  }
+};
+
 module.exports = {
   getAllClubs,
   getClubByUserId,
@@ -268,6 +287,7 @@ module.exports = {
   addMember,
   removeMember,
   getClubEvents,
-  getClubBudget
+  getClubBudget,
+  getClubBudgetSummary
 };
 

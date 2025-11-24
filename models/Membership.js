@@ -84,12 +84,24 @@ class Membership {
     return rows.length > 0;
   }
 
+  // Check if active or pending membership exists
+  static async hasActiveOrPendingMembership(clubId, personId) {
+    const [rows] = await db.query(
+      'SELECT Membership_ID FROM CLUB_MEMBERSHIP WHERE Club_ID = ? AND Person_ID = ? AND Status IN (?, ?)',
+      [clubId, personId, 'Active', 'Pending']
+    );
+    return rows.length > 0;
+  }
+
   // Create membership
   static async create(membershipData) {
-    // Check if membership already exists
-    const exists = await this.exists(membershipData.clubId, membershipData.personId);
-    if (exists) {
-      throw new Error('Membership already exists');
+    // Check if active or pending membership already exists
+    const hasActiveOrPending = await this.hasActiveOrPendingMembership(
+      membershipData.clubId, 
+      membershipData.personId
+    );
+    if (hasActiveOrPending) {
+      throw new Error('You already have an active or pending membership request for this club');
     }
 
     const [result] = await db.query(

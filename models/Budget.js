@@ -180,6 +180,22 @@ class Budget {
     `);
     return rows;
   }
+
+  // Get club budget summary using stored procedure
+  static async getClubBudgetSummary(clubId) {
+    // mysql2/promise returns stored procedure results as [rows, fields]
+    // For CALL statements, it returns an array of result sets
+    const results = await db.query('CALL Get_Club_Budget_Summary(?)', [clubId]);
+    // mysql2 returns [[rows, fields]] for single result set procedures
+    // We need to access the first result set's rows
+    if (Array.isArray(results) && results.length > 0) {
+      const firstResult = results[0];
+      if (Array.isArray(firstResult) && firstResult.length > 0) {
+        return firstResult[0] || [];
+      }
+    }
+    return [];
+  }
 }
 
 module.exports = Budget;
