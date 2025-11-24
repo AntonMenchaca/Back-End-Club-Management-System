@@ -229,6 +229,28 @@ class Membership {
     `);
     return rows;
   }
+
+  // Get pending membership requests for clubs where user is a club leader
+  static async getPendingMembershipsForClubLeader(personId) {
+    const [rows] = await db.query(`
+      SELECT cm.Membership_ID, cm.Person_ID, cm.Club_ID, cm.Role, 
+             cm.Date_Joined, cm.Status,
+             p.First_Name, p.Last_Name, p.Email, p.Phone,
+             c.Club_Name,
+             u.Department, u.Year
+      FROM CLUB_MEMBERSHIP cm
+      JOIN PERSON p ON cm.Person_ID = p.Person_ID
+      JOIN CLUB c ON cm.Club_ID = c.Club_ID
+      LEFT JOIN USER u ON cm.Person_ID = u.Person_ID
+      JOIN CLUB_MEMBERSHIP cm_leader ON c.Club_ID = cm_leader.Club_ID
+      WHERE cm.Status = 'Pending'
+        AND cm_leader.Person_ID = ?
+        AND cm_leader.Role = 'Club Leader'
+        AND cm_leader.Status = 'Active'
+      ORDER BY cm.Date_Joined DESC
+    `, [personId]);
+    return rows;
+  }
 }
 
 module.exports = Membership;

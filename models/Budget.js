@@ -181,6 +181,44 @@ class Budget {
     return rows;
   }
 
+  // Get expenditure requests for clubs where user is a club leader
+  static async getExpendituresForClubLeader(personId) {
+    const [rows] = await db.query(`
+      SELECT e.Expenditure_ID, e.Budget_ID, e.Expense_Description, e.Amount, 
+             e.Request_Expense_Date, e.Status,
+             b.Club_ID, b.Academic_Year,
+             c.Club_Name
+      FROM EXPENDITURE e
+      JOIN BUDGET b ON e.Budget_ID = b.Budget_ID
+      JOIN CLUB c ON b.Club_ID = c.Club_ID
+      JOIN CLUB_MEMBERSHIP cm ON c.Club_ID = cm.Club_ID
+      WHERE cm.Person_ID = ? 
+        AND cm.Role = 'Club Leader' 
+        AND cm.Status = 'Active'
+      ORDER BY e.Request_Expense_Date DESC
+    `, [personId]);
+    return rows;
+  }
+
+  // Get all expenditure requests (pending and non-pending) for clubs where user is a club leader
+  static async getAllExpendituresForClubLeader(personId) {
+    const [rows] = await db.query(`
+      SELECT e.Expenditure_ID, e.Budget_ID, e.Expense_Description, e.Amount, 
+             e.Request_Expense_Date, e.Status,
+             b.Club_ID, b.Academic_Year,
+             c.Club_Name
+      FROM EXPENDITURE e
+      JOIN BUDGET b ON e.Budget_ID = b.Budget_ID
+      JOIN CLUB c ON b.Club_ID = c.Club_ID
+      JOIN CLUB_MEMBERSHIP cm ON c.Club_ID = cm.Club_ID
+      WHERE cm.Person_ID = ? 
+        AND cm.Role = 'Club Leader' 
+        AND cm.Status = 'Active'
+      ORDER BY e.Request_Expense_Date DESC
+    `, [personId]);
+    return rows;
+  }
+
   // Get club budget summary using stored procedure
   static async getClubBudgetSummary(clubId) {
     // mysql2/promise returns stored procedure results as [rows, fields]
