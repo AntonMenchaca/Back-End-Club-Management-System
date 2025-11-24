@@ -2,10 +2,10 @@ const Budget = require('../models/Budget');
 const Membership = require('../models/Membership');
 const Club = require('../models/Club');
 
-// @desc    Get all pending expenditure requests
+// @desc    Get all expenditures
 // @route   GET /api/requests/expenditures
 // @access  Private (Admin or Club Leader)
-// Admin: sees all pending requests
+// Admin: sees all expenditures (all statuses)
 // Club Leader: sees all requests (pending and non-pending) for clubs they lead
 const getPendingExpenditures = async (req, res) => {
   try {
@@ -15,8 +15,8 @@ const getPendingExpenditures = async (req, res) => {
     let expenditures;
     
     if (userRole === 'Admin') {
-      // Admin sees all pending requests
-      expenditures = await Budget.getAllPendingExpenditures();
+      // Admin sees all expenditures (all statuses)
+      expenditures = await Budget.getAllExpenditures();
     } else {
       // Club Leaders see all requests (pending and non-pending) for clubs they lead
       expenditures = await Budget.getAllExpendituresForClubLeader(personId);
@@ -28,10 +28,10 @@ const getPendingExpenditures = async (req, res) => {
       data: expenditures
     });
   } catch (error) {
-    console.error('Get pending expenditures error:', error);
+    console.error('Get expenditures error:', error);
     res.status(500).json({
       status: 'error',
-      message: 'Error fetching expenditure requests',
+      message: 'Error fetching expenditures',
       error: error.message
     });
   }

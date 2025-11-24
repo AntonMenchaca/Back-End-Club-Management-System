@@ -165,8 +165,8 @@ class Budget {
     return rows[0];
   }
 
-  // Get all pending expenditure requests with club and budget info
-  static async getAllPendingExpenditures() {
+  // Get all expenditures with club and budget info
+  static async getAllExpenditures() {
     const [rows] = await db.query(`
       SELECT e.Expenditure_ID, e.Budget_ID, e.Expense_Description, e.Amount, 
              e.Request_Expense_Date, e.Status,
@@ -175,7 +175,6 @@ class Budget {
       FROM EXPENDITURE e
       JOIN BUDGET b ON e.Budget_ID = b.Budget_ID
       JOIN CLUB c ON b.Club_ID = c.Club_ID
-      WHERE e.Status = 'Pending'
       ORDER BY e.Request_Expense_Date DESC
     `);
     return rows;
