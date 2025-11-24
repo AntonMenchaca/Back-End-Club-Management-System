@@ -26,6 +26,7 @@ const memberRoutes = require('./routes/memberRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const budgetRoutes = require('./routes/budgetRoutes');
 const membershipRoutes = require('./routes/membershipRoutes');
+const requestRoutes = require('./routes/requestRoutes');
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -34,6 +35,7 @@ app.use('/api/members', memberRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/budgets', budgetRoutes);
 app.use('/api/memberships', membershipRoutes);
+app.use('/api/requests', requestRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -56,6 +58,7 @@ app.get('/', (req, res) => {
       events: '/api/events',
       budgets: '/api/budgets',
       memberships: '/api/memberships',
+      requests: '/api/requests',
       health: '/api/health'
     }
   });
