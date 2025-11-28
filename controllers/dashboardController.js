@@ -38,12 +38,14 @@ const getDashboardStats = async (req, res) => {
     const totalMembers = allMemberships.length;
     const activeMembers = allMemberships.filter(m => m.Status === 'Active').length;
 
-    // Get budget statistics
+    // Get budget statistics (only for active clubs)
     const [budgetStats] = await db.query(`
       SELECT 
-        COALESCE(SUM(Total_Allocated), 0) as totalBudgetAllocated,
-        COALESCE(SUM(Total_Spent), 0) as totalBudgetSpent
-      FROM BUDGET
+        COALESCE(SUM(b.Total_Allocated), 0) as totalBudgetAllocated,
+        COALESCE(SUM(b.Total_Spent), 0) as totalBudgetSpent
+      FROM BUDGET b
+      INNER JOIN CLUB c ON b.Club_ID = c.Club_ID
+      WHERE c.STATUS = 'Active'
     `);
 
     // Get recent activities (last 10)
