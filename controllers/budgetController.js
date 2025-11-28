@@ -1,4 +1,5 @@
 const Budget = require('../models/Budget');
+const Membership = require('../models/Membership');
 
 const getAllBudgets = async (req, res) => {
   try {
@@ -121,15 +122,45 @@ const getExpenditures = async (req, res) => {
 
 const addExpenditure = async (req, res) => {
   try {
+    const userRole = req.user.role;
+    const personId = req.user.id; // Person_ID from JWT
+    const budgetId = req.params.id;
+    
+    // Get budget to check club
+    const budget = await Budget.getById(budgetId);
+    if (!budget) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Budget not found'
+      });
+    }
+    
+    // Check permissions: Admin can create for any club, Club Leaders only for their clubs
+    if (userRole !== 'Admin') {
+      const isClubLeader = await Membership.isClubLeader(budget.Club_ID, personId);
+      if (!isClubLeader) {
+        return res.status(403).json({
+          status: 'error',
+          message: 'Only Club Leaders and Admins can create expenditure requests. You must be a Club Leader of this club to create expenditure requests.'
+        });
+      }
+    }
+    
+    // For Club Leaders, force status to 'Pending' (they can't set it to anything else)
+    // Admins can set any status
+    const status = userRole === 'Admin' 
+      ? (req.body.status || 'Pending')
+      : 'Pending';
+    
     const expenditureData = {
       expenseDescription: req.body.expenseDescription,
       amount: req.body.amount,
       requestExpenseDate: req.body.requestExpenseDate,
-      status: req.body.status || 'Pending'
+      status: status
     };
     
     const expenditureId = await Budget.addExpenditure(
-      req.params.id,
+      budgetId,
       expenditureData
     );
     
@@ -137,6 +168,7 @@ const addExpenditure = async (req, res) => {
     
     res.status(201).json({
       status: 'success',
+      message: 'Expenditure request created successfully',
       data: expenditure
     });
   } catch (error) {
