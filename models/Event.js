@@ -23,6 +23,10 @@ class Event {
       conditions.push('e.Event_Date >= CURDATE()');
     }
 
+    if (filters.past === 'true') {
+      conditions.push('e.Event_Date < CURDATE()');
+    }
+
     if (filters.search) {
       conditions.push('(e.Event_Name LIKE ? OR e.Description LIKE ?)');
       params.push(`%${filters.search}%`, `%${filters.search}%`);

@@ -28,6 +28,7 @@ const budgetRoutes = require('./routes/budgetRoutes');
 const membershipRoutes = require('./routes/membershipRoutes');
 const requestRoutes = require('./routes/requestRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const guestRoutes = require('./routes/guestRoutes');
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -38,6 +39,7 @@ app.use('/api/budgets', budgetRoutes);
 app.use('/api/memberships', membershipRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/guests', guestRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -62,6 +64,7 @@ app.get('/', (req, res) => {
       memberships: '/api/memberships',
       requests: '/api/requests',
       dashboard: '/api/dashboard',
+      guests: '/api/guests',
       health: '/api/health'
     }
   });

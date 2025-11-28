@@ -1,10 +1,12 @@
 const Event = require('../models/Event');
+const Membership = require('../models/Membership');
 
 const getAllEvents = async (req, res) => {
   try {
     const filters = {
       clubId: req.query.clubId,
       upcoming: req.query.upcoming,
+      past: req.query.past,
       search: req.query.search
     };
     
@@ -50,6 +52,18 @@ const getEventById = async (req, res) => {
 
 const createEvent = async (req, res) => {
   try {
+    const personId = req.user.id; // Person_ID from JWT
+    const { clubId } = req.body;
+    
+    // Only Club Leaders can create events for clubs they lead
+    const isClubLeader = await Membership.isClubLeader(clubId, personId);
+    if (!isClubLeader) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Only Club Leaders can create events. You must be a Club Leader of this club to create an event for it.'
+      });
+    }
+    
     const eventData = {
       clubId: req.body.clubId,
       eventName: req.body.eventName,
@@ -76,12 +90,34 @@ const createEvent = async (req, res) => {
 
 const updateEvent = async (req, res) => {
   try {
+    const personId = req.user.id; // Person_ID from JWT
     const event = await Event.getById(req.params.id);
     
     if (!event) {
       return res.status(404).json({
         status: 'error',
         message: 'Event not found'
+      });
+    }
+    
+    // Check if event is in the past - only upcoming events can be edited
+    const eventDate = new Date(event.Event_Date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    eventDate.setHours(0, 0, 0, 0);
+    if (eventDate < today) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Past events cannot be edited'
+      });
+    }
+    
+    // Only Club Leaders of the event's club can edit
+    const isClubLeader = await Membership.isClubLeader(event.Club_ID, personId);
+    if (!isClubLeader) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Only Club Leaders can edit events for their clubs'
       });
     }
     
@@ -153,8 +189,32 @@ const getEventAttendees = async (req, res) => {
 
 const addAttendee = async (req, res) => {
   try {
+    const userRole = req.user.role;
+    const personId = req.user.id; // Person_ID from JWT
+    const eventId = req.params.id;
+    
+    // Get event to check club
+    const event = await Event.getById(eventId);
+    if (!event) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Event not found'
+      });
+    }
+    
+    // Check permissions: Admin can add to any event, Club Leaders only for their clubs
+    if (userRole !== 'Admin') {
+      const isClubLeader = await Membership.isClubLeader(event.Club_ID, personId);
+      if (!isClubLeader) {
+        return res.status(403).json({
+          status: 'error',
+          message: 'Only Club Leaders and Admins can add attendees. You must be a Club Leader of this event\'s club to add attendees.'
+        });
+      }
+    }
+    
     const attendanceId = await Event.addAttendee(
-      req.params.id,
+      eventId,
       req.body.personId
     );
     
