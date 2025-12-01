@@ -35,9 +35,10 @@ A RESTful API built with Node.js, Express, and MySQL for managing university clu
 
 ### 1. Clone the Repository
 
+
+
 ```bash
-git clone <repository-url>
-cd all-stack-club-management/Back-End-Club-Management-System
+git clone https://github.com/AntonMenchaca/Back-End-Club-Management-System.git
 ```
 
 ### 2. Install Dependencies
