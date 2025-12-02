@@ -35,8 +35,9 @@ const getDashboardStats = async (req, res) => {
 
     // Get memberships
     const allMemberships = await Membership.getAll();
+    const allActiveMembers = await Membership.getAllActive();
     const totalMembers = allMemberships.length;
-    const activeMembers = allMemberships.filter(m => m.Status === 'Active').length;
+    const activeMembers = allActiveMembers.length;
 
     // Get budget statistics (only for active clubs)
     const [budgetStats] = await db.query(`

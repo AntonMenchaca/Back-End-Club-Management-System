@@ -1,6 +1,12 @@
 const db = require('../config/database');
 
 class Membership {
+  // Get all active memberships using a view
+  static async getAllActive() {
+    let query = `SELECT * FROM Active_Club_Members`;
+    const [rows] = await db.query(query);
+    return rows;
+  }
   // Get all memberships with optional filters
   static async getAll(filters = {}) {
     let query = `
