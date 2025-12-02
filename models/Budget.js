@@ -130,21 +130,21 @@ class Budget {
         'UPDATE EXPENDITURE SET Status = ? WHERE Expenditure_ID = ?',
         [status, expenditureId]
       );
-
+      // TODO: ADD BACK AND EXPLAIN WHY WE DONT NEED THE CURSOR!!
       // If approved, update budget total spent
-      if (status === 'Approved') {
-        const [expenditure] = await connection.query(
-          'SELECT Amount FROM EXPENDITURE WHERE Expenditure_ID = ?',
-          [expenditureId]
-        );
+      // if (status === 'Approved') {
+      //   const [expenditure] = await connection.query(
+      //     'SELECT Amount FROM EXPENDITURE WHERE Expenditure_ID = ?',
+      //     [expenditureId]
+      //   );
         
-        if (expenditure[0]) {
-          await connection.query(
-            'UPDATE BUDGET SET Total_Spent = Total_Spent + ? WHERE Budget_ID = ?',
-            [expenditure[0].Amount, budgetId]
-          );
-        }
-      }
+      //   if (expenditure[0]) {
+      //     await connection.query(
+      //       'UPDATE BUDGET SET Total_Spent = Total_Spent + ? WHERE Budget_ID = ?',
+      //       [expenditure[0].Amount, budgetId]
+      //     );
+      //   }
+      // }
 
       await connection.commit();
       return true;
@@ -233,7 +233,23 @@ class Budget {
     }
     return [];
   }
+
+        // TODO:REMOVE WHEN CURSOR IS PRESENTED! 
+static async recalculateTotalSpent() {
+ 
+    const [rows] = await db.query('CALL Update_Budget_Spent()');
+ 
+    if (Array.isArray(rows) && rows[0] && rows[0].Message) {
+ 
+      return rows[0].Message;
+ 
+    }
+ 
+    return 'Budget totals updated successfully';
+ 
+  }  
 }
+
 
 module.exports = Budget;
 

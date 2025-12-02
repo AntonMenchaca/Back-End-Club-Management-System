@@ -212,6 +212,36 @@ const updateExpenditureStatus = async (req, res) => {
   }
 };
 
+const recalculateBudgetTotals = async (req, res) => {
+ 
+  try {
+ 
+    const message = await Budget.recalculateTotalSpent();
+ 
+    res.status(200).json({
+ 
+      status: 'success',
+ 
+      message
+ 
+    });
+ 
+  } catch (error) {
+ 
+    console.error('Recalculate budget totals error:', error);
+ 
+    res.status(500).json({
+ 
+      status: 'error',
+ 
+      message: error.message
+ 
+    });
+ 
+  }
+ 
+};
+
 module.exports = {
   getAllBudgets,
   getBudgetById,
@@ -219,6 +249,7 @@ module.exports = {
   updateBudget,
   getExpenditures,
   addExpenditure,
-  updateExpenditureStatus
+  updateExpenditureStatus,
+  recalculateBudgetTotals
 };
 
