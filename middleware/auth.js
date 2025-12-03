@@ -39,7 +39,7 @@ const authorizeRoles = (...roles) => {
         message: 'Authentication required'
       });
     }
-    
+
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({
         status: 'error',
@@ -56,6 +56,8 @@ const authorizeRoles = (...roles) => {
  */
 const checkPermission = (permission) => {
   return async (req, res, next) => {
+  console.log('the req user', req.user)
+
     if (!req.user) {
       return res.status(401).json({
         status: 'error',

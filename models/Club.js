@@ -11,7 +11,7 @@ class Club {
              COUNT(DISTINCT cm.Person_ID) as Member_Count
       FROM CLUB c
       LEFT JOIN PERSON p ON c.Created_By = p.Person_ID
-      LEFT JOIN CLUB_MEMBERSHIP cm ON c.Club_ID = cm.Club_ID AND cm.Status = 'Active'
+      LEFT JOIN CLUB_MEMBERSHIP cm ON c.Club_ID = cm.Club_ID 
     `;
     
     const conditions = [];

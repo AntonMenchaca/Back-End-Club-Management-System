@@ -213,7 +213,6 @@ const updateExpenditureStatus = async (req, res) => {
 };
 
 const recalculateBudgetTotals = async (req, res) => {
- 
   try {
  
     const message = await Budget.recalculateTotalSpent();
